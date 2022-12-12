@@ -4,8 +4,8 @@ def solution(inp, start):
 
   l = 0
   p = set()
-  q = [(i,j,l) for i, row in enumerate(inp)
-               for j, col in enumerate(row) if col in start]
+  q = [(x,y,l) for x, row in enumerate(inp)
+               for y, col in enumerate(row) if col in start]
 
   while q:
     x, y, l = q.pop(0)
