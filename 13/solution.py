@@ -29,8 +29,8 @@ def sol_1(inp):
 
 
 class Key(list):
-    def __lt__(self, other):
-        return compare(self, other)
+  def __lt__(self, other):
+    return compare(self, other)
 
 
 def sol_2(inp):
