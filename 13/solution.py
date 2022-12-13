@@ -14,10 +14,8 @@ def compare(a, b):
       if   type(x) == int: x = [x]
       elif type(y) == int: y = [y]
       result = compare(x, y)
-      if result is not None:
-        return result
-  if len(a) != len(b):
-    return len(a) < len(b)
+      if result is not None: return result
+  if len(a) != len(b): return len(a) < len(b)
 
 
 def sol_1(inp):
@@ -30,15 +28,15 @@ def sol_1(inp):
   return sum(result)
 
 
+class Key(list):
+    def __lt__(self, other):
+        return compare(self, other)
+
+
 def sol_2(inp):
 
   insert = [[[2]], [[6]]]
-  result = insert[:]
-  for new in inp:
-    for n, other in enumerate(result):
-      if compare(new, other): break
-    else: n = n+1
-    result.insert(n, new)
+  result = sorted(inp + insert, key=Key)
   x, y = map(result.index, insert)
 
   return (x+1) * (y+1)
