@@ -2,42 +2,34 @@
 
 def parse_input(inp):
 
-  return [*map(eval, inp.replace('\n\n','\n').splitlines())]
+  return [Cmp(eval(lst)) for lst in inp.replace('\n\n','\n').splitlines()]
 
+class Cmp(list):
 
-def compare(a, b):
+  def __lt__(self, other):
 
-  for x, y in zip(a,b):
-    if type(x) == type(y) == int:
-      if x != y: return x < y
-    else:
-      if   type(x) == int: x = [x]
-      elif type(y) == int: y = [y]
-      result = compare(x, y)
-      if result is not None: return result
-  if len(a) != len(b): return len(a) < len(b)
+    for x, y in zip(self, other):
+      if type(x) == type(y) == int:
+        if x != y: return x < y
+      else:
+        if   type(x) == int: x = [x]
+        elif type(y) == int: y = [y]
+        result = Cmp(x) < Cmp(y)
+        if result is not None: return result
+    if len(self) != len(other): return len(self) < len(other)
 
 
 def sol_1(inp):
 
-  pairs  = zip(*[iter(inp)]*2)
-  result = []
-  for n,(a,b) in enumerate(pairs):
-    if compare(a,b): result.append(n+1)
+  pairs = zip(*[iter(inp)]*2)
 
-  return sum(result)
-
-
-class Key(list):
-  def __lt__(self, other):
-    return compare(self, other)
+  return sum(n+1 for n, (a,b) in enumerate(pairs) if a < b)
 
 
 def sol_2(inp):
 
   insert = [[[2]], [[6]]]
-  result = sorted(inp + insert, key=Key)
-  x, y = map(result.index, insert)
+  x, y = map(sorted(insert + inp).index, insert)
 
   return (x+1) * (y+1)
 
