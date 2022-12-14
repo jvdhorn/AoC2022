@@ -2,7 +2,8 @@
 
 def parse_input(inp):
 
-  return [Cmp(eval(lst)) for lst in inp.replace('\n\n','\n').splitlines()]
+  return [Cmp(eval(lst)) for lst in inp if lst]
+
 
 class Cmp(list):
 
@@ -36,7 +37,7 @@ def sol_2(inp):
 
 if __name__ == '__main__':
   with open('input.txt') as inp:
-    raw       = inp.read()
+    raw       = inp.read().splitlines()
     lists     = parse_input(raw)
     solution1 = sol_1(lists)
     print(solution1)
