@@ -4,7 +4,7 @@ def parse_input(inp):
 
   coords = [[(*map(int,ent.split(',')),) for ent in line.split('->')]
             for line in inp]
-  x_max  = max(x for y,x in sum(coords, [])) + 2
+  x_max  = max(x for y, x in sum(coords, [])) + 2
   grid   = [[0]*(x_max * 2 + 1) for row in range(x_max)]
   for line in coords:
     for (a,b), (c,d) in zip(line, line[1:]):
@@ -12,7 +12,7 @@ def parse_input(inp):
         for y in range(min(a,c), max(a,c)+1):
           grid[x][y - 500 + x_max] = 1
 
-  return grid, x_max
+  return grid
 
 
 def drop_sand(grid, pos):
@@ -29,16 +29,18 @@ def drop_sand(grid, pos):
   return grid
 
 
-def simulate(grid, drop):
+def simulate(grid):
+
+  x, y = 0, len(grid[0])//2
 
   n = 0
   while not any(grid[-1]):
-    grid = drop_sand(grid, (0,drop))
+    grid = drop_sand(grid, (x,y))
     n   += 1
 
   k = n
-  while not grid[0][drop]:
-    grid = drop_sand(grid, (0,drop))
+  while not grid[x][y]:
+    grid = drop_sand(grid, (x,y))
     k   += 1
     
   return n - 1, k
@@ -47,7 +49,7 @@ def simulate(grid, drop):
 if __name__ == '__main__':
   with open('input.txt') as inp:
     raw       = inp.read().splitlines()
-    grid,drop = parse_input(raw)
-    sol1,sol2 = simulate(grid, drop)
+    grid      = parse_input(raw)
+    sol1,sol2 = simulate(grid)
     print(sol1)
     print(sol2)
