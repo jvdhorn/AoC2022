@@ -9,23 +9,26 @@ def parse_input(inp):
   return valves
 
 
-def bfs(x, graph):
+def bfs(graph):
 
-  visited = dict()
-  q       = [(x,0)]
+  all_distances = dict()
 
-  while q:
-    pos, dist = q.pop(0)
-    visited.update({pos:dist})
-    for option in graph[pos][1]:
-      if option not in visited: q.append((option, dist+1))
+  for x in graph:
+    all_distances[x] = visited = dict()
+    q                = [(x,0)]
 
-  return visited
+    while q:
+      pos, dist = q.pop(0)
+      visited.update({pos:dist})
+      for option in graph[pos][1]:
+        if option not in visited: q.append((option, dist+1))
+
+  return all_distances
 
 
 def sol_1(inp):
 
-  all_distances = {x:bfs(x, inp) for x in inp}
+  all_distances = bfs(inp)
   record        = 0
   remaining     = {i for i in inp if inp[i][0]} - {'AA'}
   q             = [(0, 'AA', 30, remaining)]
@@ -34,42 +37,42 @@ def sol_1(inp):
     score, position, steps, remaining = q.pop()
     if score > record: record = score
     distances = all_distances[position]
-    for x in remaining:
-      d = distances[x]
-      if steps > d:
-        q.append(((steps-d-1) * inp[x][0] + score, x, steps-d-1, remaining-{x}))
+    options   = {i:(steps-distances[i]-1) * inp[i][0]
+                 for i in remaining if steps > distances[i]}
+    if not sum(options.values()) < record - score:
+      for x in options:
+        q.append((options[x] + score, x, steps-distances[x]-1, remaining-{x}))
 
   return record
 
 
 def sol_2(inp):
 
-  all_distances = {x:bfs(x, inp) for x in inp}
+  all_distances = bfs(inp)
   record        = 0
   remaining     = {i for i in inp if inp[i][0]} - {'AA'}
   q             = [(0, 'AA', 'AA', 26, 26, remaining)]
+  default       = {None: 0}
 
   while q:
     score, pos_x, pos_y, steps_x, steps_y, remaining = q.pop()
     if score > record: record = score
     dist_x = all_distances[pos_x]
     dist_y = all_distances[pos_y]
-    for x in {i for i in remaining if steps_x > dist_x[i]} or {None}:
-      for y in {i for i in remaining if steps_y > dist_y[i]} or {None}:
-        if x==y: continue
-        elif x==None:
-          dy = dist_y[y]
-          new_score = (steps_y-dy-1) * inp[y][0] + score
-          q.append((new_score, pos_x, y, steps_x, steps_y-dy-1, remaining-{y}))
-        elif y==None:
-          dx = dist_x[x]
-          new_score = (steps_x-dx-1) * inp[x][0] + score
-          q.append((new_score, x, pos_y, steps_x-dx-1, steps_y, remaining-{x}))
-        else:
-          dx = dist_x[x]
-          dy = dist_y[y]
-          new_score = (steps_x-dx-1) * inp[x][0] + (steps_y-dy-1) * inp[y][0] + score
-          q.append((new_score, x, y, steps_x-dx-1, steps_y-dy-1, remaining-{x,y}))
+    opts_x = {i: (steps_x-dist_x[i]-1) * inp[i][0]
+              for i in remaining if steps_x > dist_x[i]} or default
+    opts_y = {i: (steps_y-dist_y[i]-1) * inp[i][0]
+              for i in remaining if steps_y > dist_y[i]} or default
+    if not sum(opts_x.values()) < record - score > sum(opts_y.values()):
+      for x in opts_x or default:
+        for y in opts_y or default:
+          if x != y:
+            x_left = steps_x - dist_x[x] - 1 if x else steps_x
+            y_left = steps_y - dist_y[y] - 1 if y else steps_y
+            new_x  = x if x else pos_x
+            new_y  = y if y else pos_y
+            q.append((score + opts_x[x] + opts_y[y], new_x, new_y,
+                      x_left, y_left, remaining-{x,y}))
 
   return record
 
