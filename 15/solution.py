@@ -42,7 +42,7 @@ def sol_1(sensors, n=2000000):
   return sum(j-i+1 for i, j in rng) - beacons
 
 
-def sol_2(sensors, n=4000000):
+def sol_2_slow(sensors, n=4000000):
 
   distances = get_distances(sensors)
 
@@ -53,7 +53,30 @@ def sol_2(sensors, n=4000000):
       if dist > 0: rng.update((max(0,x-dist), min(n, x+dist)))
     if len(rng) > 1: break
   
-  return (min(rng)[1] + 1) * n + i
+  return (min(rng)[1] + 1) * 4000000 + i
+
+
+def sol_2(sensors, n=4000000):
+
+  distances = get_distances(sensors)
+
+  pos = []
+  neg = []
+
+  for (x,y), d in distances.items():
+    pos += [y-x-d-1, y-x+d+1]
+    neg += [y+x-d-1, y+x+d+1]
+
+  pos = {i for i in set(pos) if pos.count(i) > 1}
+  neg = {j for j in set(neg) if neg.count(j) > 1}
+
+  for i in pos:
+    for j in neg:
+      y = (i+j) // 2
+      x = j - y
+      if (0 <= x <= n >= y >= 0 and
+          all(abs(x-i)+abs(y-j) > d for (i,j),d in distances.items())):
+        return x * 4000000 + y 
 
 
 if __name__ == '__main__':

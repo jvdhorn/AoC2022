@@ -3,7 +3,7 @@
 def parse_input(inp):
 
   valves = {ln[1]:
-             (int(ln[4].strip('rate=;')), tuple(x.strip(',') for x in ln[9:]))
+              (int(ln[4].strip('rate=;')), tuple(x.strip(',') for x in ln[9:]))
             for ln in map(str.split, inp)}
 
   return valves
@@ -67,10 +67,8 @@ def sol_2(inp):
       for x in opts_x:
         for y in opts_y:
           if x != y:
-            x_left = steps_x - dist_x[x] - 1 if x else steps_x
-            y_left = steps_y - dist_y[y] - 1 if y else steps_y
-            new_x  = x if x else pos_x
-            new_y  = y if y else pos_y
+            x_left, new_x = (steps_x-dist_x[x]-1, x) if x else (steps_x, pos_x)
+            y_left, new_y = (steps_y-dist_y[y]-1, y) if y else (steps_y, pos_y)
             q.append((score + opts_x[x] + opts_y[y], new_x, new_y,
                       x_left, y_left, remaining-{x,y}))
 
