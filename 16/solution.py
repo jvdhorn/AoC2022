@@ -64,8 +64,8 @@ def sol_2(inp):
     opts_y = {i: (steps_y-dist_y[i]-1) * inp[i][0]
               for i in remaining if steps_y > dist_y[i]} or default
     if not sum(opts_x.values()) < record - score > sum(opts_y.values()):
-      for x in opts_x or default:
-        for y in opts_y or default:
+      for x in opts_x:
+        for y in opts_y:
           if x != y:
             x_left = steps_x - dist_x[x] - 1 if x else steps_x
             y_left = steps_y - dist_y[y] - 1 if y else steps_y
