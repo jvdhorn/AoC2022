@@ -5,11 +5,16 @@ def parse_input(inp):
   return {tuple(map(int, ln.split(','))) for ln in inp}
 
 
+def get_adj(pos):
+
+  i, j, k = pos
+
+  return {(i-1,j,k),(i+1,j,k),(i,j-1,k),(i,j+1,k),(i,j,k-1),(i,j,k+1)}
+
+
 def get_area(inp):
 
-  valid = {(1,0,0), (0,1,0), (0,0,1), (-1,0,0), (0,-1,0), (0,0,-1)} 
-
-  return sum(6 - sum((x-i,y-j,z-k) in valid for i,j,k in inp) for x,y,z in inp)
+  return sum(6 - len(get_adj(pos) & inp) for pos in inp)
 
 
 def solution(inp):
@@ -21,9 +26,9 @@ def solution(inp):
   q       = {min(out)}
 
   while q:
-    i, j, k = q.pop()
-    q |= {(i-1,j,k),(i+1,j,k),(i,j-1,k),(i,j+1,k),(i,j,k-1),(i,j,k+1)} & out
-    out.remove((i,j,k))
+    pos = q.pop()
+    q  |= get_adj(pos) & out
+    out.remove(pos)
 
   return area, area - get_area(out)
 
