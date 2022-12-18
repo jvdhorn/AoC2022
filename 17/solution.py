@@ -67,32 +67,26 @@ def solution(inp, n):
   blow   = get_wind(inp)
   rocks  = Rocks()
   grid   = set()
-  height = 0
-  diff   = []
-  prev   = {}
-  rep    = 0
+  height = count = s = 0
+  rep    = n+1
+  prev   = dict()
 
-  while not rep:
+  while (n-count) % rep:
     r, rock = rocks.get(height + 3)
-    drop = 1
+    drop    = 1
     while drop:
       w, wind = next(blow)
       rock.push(grid, wind)
       drop = (drop + 1) * rock.drop(grid)
       if w == 0:
         p = prev.get((r,drop))
-        if p: rep = len(diff) - p
-        else: prev[(r,drop)] = len(diff)
-    new_height = max(*next(zip(*rock)), height-1) + 1
-    diff.append(new_height - height)
-    height     = new_height
-    grid      |= rock
+        if p: rep = count - p[0]; s = height - p[1]
+        else: prev[(r,drop)] = (count, height)
+    height = max(*next(zip(*rock)), height-1) + 1
+    grid  |= rock
+    count += 1
 
-  start = len(diff) - rep
-  mid   = max(0, n - start) // rep
-  end   = n - start - mid * rep
-
-  return sum(diff[:start]) + mid * sum(diff[-rep:]) + sum(diff[-rep:end-rep])
+  return height + (n-count) // rep * s
 
 
 if __name__ == '__main__':
