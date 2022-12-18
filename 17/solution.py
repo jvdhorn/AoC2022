@@ -83,7 +83,7 @@ def solution(inp, n):
         p = prev.get((r,drop))
         if p: rep = len(diff) - p
         else: prev[(r,drop)] = len(diff)
-    new_height = max(next(zip(*rock))+(height-1,)) + 1
+    new_height = max(*next(zip(*rock)), height-1) + 1
     diff.append(new_height - height)
     height     = new_height
     grid      |= rock
