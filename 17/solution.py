@@ -4,7 +4,7 @@ def get_wind(inp):
 
   n = 0
   while True:
-    yield ord(inp[n])-61
+    yield n, ord(inp[n])-61
     n = (n + 1) % len(inp)
 
 
@@ -24,7 +24,7 @@ class Rocks(object):
     rock       = Rock((x+h, y) for x, y in self.rocks[self.count])
     self.count = (self.count + 1) % len(self.rocks)
 
-    return rock
+    return self.count, rock
 
 
 class Rock(set):
@@ -64,32 +64,35 @@ def vis(grid):
 
 def solution(inp, n):
 
-  wind   = get_wind(inp)
+  blow   = get_wind(inp)
   rocks  = Rocks()
   grid   = set()
   height = 0
   diff   = []
+  prev   = {}
+  rep    = 0
 
-  while True:
-    rock = rocks.get(height + 3)
-    drop = True
+  while not rep:
+    r, rock = rocks.get(height + 3)
+    drop = 1
     while drop:
-      rock.push(grid, next(wind))
-      drop = rock.drop(grid)
+      w, wind = next(blow)
+      rock.push(grid, wind)
+      drop = (drop + 1) * rock.drop(grid)
+      if w == 0:
+        p = prev.get((r,drop))
+        if p: rep = len(diff) - p
+        else: prev[(r,drop)] = len(diff)
     new_height = max(next(zip(*rock))+(height-1,)) + 1
     diff.append(new_height - height)
     height     = new_height
     grid      |= rock
 
-    rep = (len(diff) + 1 - len(inp)) // 2
-    if rep * 5 > len(inp) and diff[-rep:] == diff[len(inp):len(inp)+rep]: break
-
-  start = min(n, len(inp))
+  start = len(diff) - rep
   mid   = max(0, n - start) // rep
   end   = n - start - mid * rep
 
   return sum(diff[:start]) + mid * sum(diff[-rep:]) + sum(diff[-rep:end-rep])
-
 
 
 if __name__ == '__main__':
