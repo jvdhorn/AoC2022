@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-from math import ceil
-
-
 def parse_input(inp):
 
   factories = []
@@ -36,7 +33,7 @@ class Factory(object):
       for n in 0,1,2,3:
         abc         = list(zip(robots, res, self.cost[n]))
         can_build   = all(c==0 or a for a, b, c in abc)
-        time_needed = max(ceil((c-b)/a) for a, b, c in abc if a) + 1
+        time_needed = max(1-((b-c)//a) for a, b, c in abc if a) # Ceil div
         if can_build and 0 < time_needed < t:
           new_robots    = robots[:n] + (robots[n]+1,) + robots[n+1:]
           new_resources = tuple(b + a * time_needed - c for a, b, c in abc)
