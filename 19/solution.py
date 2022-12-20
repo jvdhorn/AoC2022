@@ -21,7 +21,7 @@ class Factory(object):
 
     self.number = n
     self.cost   = cost
-    self.ccap   = tuple(max(x) for x in zip(*cost))
+    self.ccap   = tuple(map(max,zip(*cost)))
 
   def simulate(self, time):
 
@@ -33,7 +33,7 @@ class Factory(object):
       q_add          = set()
       for n in 0,1,2,3:
         abc         = list(zip(robots, res, self.cost[n]))
-        can_build   = all(c==0 or a for a, b, c in abc)
+        can_build   = all(c == 0 or a for a, b, c in abc)
         need_more   = n == 3 or self.ccap[n] > robots[n]
         time_needed = max(1-((b-c)//a) for a, b, c in abc if a) # Ceil div
         if can_build and need_more and 0 < time_needed < t:
