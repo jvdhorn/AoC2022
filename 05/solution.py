@@ -15,7 +15,7 @@ def solution(stacks, actions, rev=True):
   for x, a, b in actions:
     stacks[b-1][:0], stacks[a-1][:x] = stacks[a-1][:x][::1-rev*2], []
   
-  return ''.join([*zip(*stacks)][0])
+  return ''.join(next(zip(*stacks)))
 
 
 if __name__ == '__main__':
