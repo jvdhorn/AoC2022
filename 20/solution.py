@@ -11,10 +11,7 @@ def sol_1(numbers, times=1):
   shuffle = list(range(N))
   for n in shuffle * times:
     i = shuffle.index(n)
-    j = i + numbers[n]
-    while not 0 <= j < N:
-      j = sum(divmod(j,N))
-    j = j or N
+    j = (i + numbers[n]) % (N-1) or N
     shuffle[i:i+1], shuffle[j:j] = [], [n]
   result = [numbers[k] for k in shuffle]
   zero   = result.index(0)
