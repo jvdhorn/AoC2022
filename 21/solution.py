@@ -32,13 +32,13 @@ def monkey_reduce(monkeys, stop=''):
     for monkey in list(monkeys):
       if len(monkeys[monkey]) == 1 and monkey != stop:
         number      = monkeys.pop(monkey)[0]
-        check_again = True
         for val in monkeys.values():
           if monkey in val:
             val[val.index(monkey)] = number
             a, op, b = val
             if type(a) == type(b) == int:
-              val[:] = [operations[op](a,b)]
+              val[:]      = [operations[op](a,b)]
+              check_again = True
 
   return monkeys
 
