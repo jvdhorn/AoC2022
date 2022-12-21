@@ -27,22 +27,20 @@ def monkey_reduce(monkeys, stop=''):
 
   while check_again:
 
-    changed = False
+    check_again = False
 
     for monkey, arg in list(monkeys.items()):
       if len(arg) == 1 and monkey != stop:
         for val in list(monkeys.values()):
           if monkey in val:
             val[val.index(monkey)] = arg[0]
-            changed                = True
+            check_again            = True
             del monkeys[monkey]
       elif len(arg) == 3:
         a, op, b = arg
         if type(a) == type(b) == int:
           monkeys[monkey] = [operations[op](a,b)]
-          changed         = True
-
-    check_again = changed
+          check_again     = True
 
   return monkeys
 
