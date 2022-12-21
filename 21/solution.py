@@ -29,7 +29,7 @@ def monkey_reduce(monkeys, stop=''):
 
     check_again = False
 
-    for monkey in list(monkeys):
+    for monkey in monkeys:
       if len(monkeys[monkey]) == 1 and monkey != stop:
         number      = monkeys.pop(monkey)[0]
         for val in monkeys.values():
