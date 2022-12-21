@@ -21,7 +21,7 @@ def monkey_reduce(monkeys, stop=''):
     '*': int.__mul__,
     '/': int.__floordiv__,
   }
-  monkeys     = {m:a[:] for m,a in monkeys.items()}
+  monkeys     = {m:a[:] for m, a in monkeys.items()}
 
   check_again = True
 
@@ -29,18 +29,16 @@ def monkey_reduce(monkeys, stop=''):
 
     check_again = False
 
-    for monkey, arg in list(monkeys.items()):
-      if len(arg) == 1 and monkey != stop:
-        for val in list(monkeys.values()):
+    for monkey in list(monkeys):
+      if len(monkeys[monkey]) == 1 and monkey != stop:
+        number      = monkeys.pop(monkey)[0]
+        check_again = True
+        for val in monkeys.values():
           if monkey in val:
-            val[val.index(monkey)] = arg[0]
-            check_again            = True
-            del monkeys[monkey]
-      elif len(arg) == 3:
-        a, op, b = arg
-        if type(a) == type(b) == int:
-          monkeys[monkey] = [operations[op](a,b)]
-          check_again     = True
+            val[val.index(monkey)] = number
+            a, op, b = val
+            if type(a) == type(b) == int:
+              val[:] = [operations[op](a,b)]
 
   return monkeys
 
