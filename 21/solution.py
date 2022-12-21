@@ -47,9 +47,9 @@ def monkey_reduce(monkeys, stop=''):
 
 def solution(monkeys):
 
-  monkeys  = monkey_reduce(monkeys, stop='humn')
-  root     = monkey_reduce(monkeys, stop='root')['root'][0]
-  nxt, val = sorted(monkeys['root'][::2], key=lambda x:isinstance(x, int))
+  monkeys     = monkey_reduce(monkeys, stop='humn')
+  root        = monkey_reduce(monkeys, stop='root')['root'][0]
+  _, val, nxt = sorted(monkeys['root'], key=str)
   
   while nxt != 'humn':
     a, op, b = monkeys[nxt]
