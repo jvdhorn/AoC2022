@@ -79,7 +79,7 @@ def identify_cube(maze, size):
     if None not in (a,b,c,d):
       opposing.append((f, (set(faces)-{f,a,b,c,d}).pop()))
 
-  for a,b in set(map(tuple,map(sorted, opposing))):
+  for a, b in set(map(tuple,map(sorted, opposing))):
     common = set(cube[a]) & set(cube[b]) - {None}
     if common:
       n = common.pop()
@@ -88,11 +88,9 @@ def identify_cube(maze, size):
       for i in 0,1,2,3:
         j, k = cube[a][(x+i)%4], cube[b][(y-i)%4]
         cube[a][(x+i)%4] = cube[b][(y-i)%4] = j if j is not None else k
-
-  # This does not work in general
-  counts = [*map(sum(cube,[]).count, faces)]
-  fill   = counts.index(min(counts))
-  cube   = [[x if x is not None else fill for x in ln] for ln in cube]
+    for face in cube:
+      if a in face: face[(face.index(a)+2)%4] = b
+      if b in face: face[(face.index(b)+2)%4] = a
 
   faces  = [val for key, val in sorted(new_fcs.items())]
   net    = [val for key, val in sorted(new_net.items())]
