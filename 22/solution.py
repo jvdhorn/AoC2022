@@ -38,30 +38,30 @@ def sol_1(maze, walk):
     strp = line.strip()
     blnk = len(line.rstrip()) - len(strp)
     col  = col - blnk
-    real_steps = min(steps, (strp * 2).find('#', col) % (len(strp)*2) - col - 1)
-    new_col = (col + real_steps) % len(strp) + blnk
-    pos[1-drc%2] = [new_col, 
-                    new_col,
-                    dim[1-drc%2]-new_col-1,
-                    dim[1-drc%2]-new_col-1
-                   ][drc] % dim[1-drc%2]
+    stps = min(steps, (strp * 2).find('#', col) % (len(strp)*2) - col - 1)
+    col  = (col + stps) % len(strp) + blnk
+    pos[1-drc%2] = [col, dim[1-drc%2] - col - 1][drc//2] % dim[1-drc%2]
 
-    drc = (drc + (-1, 0, 1)['L_R'.index(turn)]) % 4
+    drc = (drc + 'L_R'.index(turn) - 1) % 4
 
   return 1000 * (pos[0]+1) + 4 * (pos[1]+1) + drc
 
 
 def identify_cube(maze, size):
 
-  faces  = range(6)
-  f_iter = iter(faces)
-  net    = [[next(f_iter) if c!=' ' else None for c in ln[::size]]
-            for ln in maze[::size]]
-  cube   = [[None]*4 for i in faces]
+  faces   = range(6)
+  f_iter  = iter(faces)
+  net     = [[next(f_iter) if c!=' ' else None for c in ln[::size]]
+             for ln in maze[::size]]
+  cube    = [[None]*4 for i in faces]
+  new_net = dict()
+  new_fcs = dict()
 
   for i,row in enumerate(net):
     for j,col in enumerate(row):
       if col is not None:
+        new_net[col] = (i,j)
+        new_fcs[col] = [line[j*size:][:size] for line in maze[i*size:][:size]]
         for n,x,y in (3, i-1, j), (1, i+1, j), (2, i, j-1), (0, i, j+1):
           if 0 <= x < len(net) and 0 <= y < len(row) and net[x][y] is not None:
             cube[col][n] = net[x][y]
@@ -89,25 +89,20 @@ def identify_cube(maze, size):
         j, k = cube[a][(x+i)%4], cube[b][(y-i)%4]
         cube[a][(x+i)%4] = cube[b][(y-i)%4] = j if j is not None else k
 
+  # This does not work in general
   counts = [*map(sum(cube,[]).count, faces)]
   fill   = counts.index(min(counts))
   cube   = [[x if x is not None else fill for x in ln] for ln in cube]
 
-  new_net = dict()
-  faces  = dict()
-  for i, row in enumerate(net):
-    for j, col in enumerate(row):
-      if col is not None:
-        new_net[col] = (i,j)
-        faces[col] = [line[j*size:][:size] for line in maze[i*size:][:size]]
-  faces = [val for key, val in sorted(faces.items())]
-  net   = [val for key, val in sorted(new_net.items())]
+  faces  = [val for key, val in sorted(new_fcs.items())]
+  net    = [val for key, val in sorted(new_net.items())]
       
   return cube, faces, net
  
 
-def sol_2(maze, walk, size=50):
+def sol_2(maze, walk):
 
+  size = int((len(''.join(maze).replace(' ',''))//6) ** 0.5)
   cube, faces, net = identify_cube(maze, size)
 
   f = x = y = d = 0
@@ -115,10 +110,8 @@ def sol_2(maze, walk, size=50):
   for steps, turn in walk:
     for _ in range(steps):
       h, i, j, k = f, x, y, d
-      if d == 0: j += 1
-      if d == 1: i += 1
-      if d == 2: j -= 1
-      if d == 3: i -= 1
+      if d%2: i += 1-d//2*2
+      else:   j += 1-d//2*2
       if not (0 <= i < size > j >= 0):
         h = cube[f][d]
         k = (cube[h].index(f) + 2) % 4
@@ -126,20 +119,17 @@ def sol_2(maze, walk, size=50):
         if t == 0:
           i = i % size
           j = j % size
-        if t == 1: 
-          i = [(size - y - 1) % size, y][d%2]
-          j = [(size - x - 1) % size, x][d%2]
-        if t == 2:
+        elif t == 2:
           i = (size - i - 1) % size
           j = (size - j - 1) % size
-        if t == 3: 
-          i = [y, (size - y - 1) % size][d%2]
-          j = [x, (size - x - 1) % size][d%2]
+        else: 
+          i = [(size - y - 1) % size, y][d%2^t//3]
+          j = [(size - x - 1) % size, x][d%2^t//3]
         
       if faces[h][i][j] != '#': f, x, y, d = h, i, j, k
       else                    : break
         
-    d = (d + (-1, 0, 1)['L_R'.index(turn)]) % 4
+    d = (d + 'L_R'.index(turn) - 1) % 4
 
   i, j = net[f]
 
