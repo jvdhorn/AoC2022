@@ -72,14 +72,16 @@ def identify_cube(maze, size):
     if c != None != b: cube[b][2] = c; cube[c][1] = b
     if c != None != d: cube[c][3] = d; cube[d][2] = c
 
-  opposing = []
+  opposing = set()
   for f,(a,b,c,d) in enumerate(cube):
-    if a != None != c: opposing.append((a,c))
-    if b != None != d: opposing.append((b,d))
+    if a != None != c: opposing.add(frozenset((a,c)))
+    if b != None != d: opposing.add(frozenset((b,d)))
     if None not in (a,b,c,d):
-      opposing.append((f, (set(faces)-{f,a,b,c,d}).pop()))
+      opposing.add(frozenset(faces) - {a,b,c,d})
+  if len(opposing) == 2:
+      opposing.add(frozenset(faces) - frozenset.union(*opposing))
 
-  for a, b in set(map(tuple,map(sorted, opposing))):
+  for a, b in opposing:
     common = set(cube[a]) & set(cube[b]) - {None}
     if common:
       n = common.pop()
