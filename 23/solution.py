@@ -15,58 +15,45 @@ class Elf(complex):
 
   adjacent = (1, 1-1j, 1+1j, -1, -1-1j, -1+1j, 1j, -1j)
 
-  check = { 1j:( 1j-1,  1j,  1j+1),
-           -1j:(-1j-1, -1j, -1j+1),
-             1:( 1-1j,   1,  1+1j),
-            -1:(-1-1j,  -1, -1+1j)}
-
-
-  def am_alone(self, others):
-
-    return not {self+i for i in self.adjacent} & others
-
-
-  def next_move(self, others, order):
-
-    for move in order:
-      if not {self+i for i in self.check[move]} & others:
-        return Elf(self + move)
-    
-    return self
+  check    = { 1j:( 1j-1,  1j,  1j+1),
+              -1j:(-1j-1, -1j, -1j+1),
+                1:( 1-1j,   1,  1+1j),
+               -1:(-1-1j,  -1, -1+1j)}
 
 
   def propose(self, others, order):
-    
-    if self.am_alone(others):
-      return self
-    else:
-      return self.next_move(others, order)
+
+    if any(self+i in others for i in self.adjacent):
+      for move in order:
+        if not any(self+i in others for i in self.check[move]):
+          return Elf(self + move)
+
+    return self
 
 
-def simulate(elves, n):
+def simulate(elves, steps):
 
   order = (1j, -1j, -1, 1)
-  rnd   = 0
+  count = 0
 
-  while rnd < n:
-    changed   = False
+  while count < steps:
     proposals = dict()
-    counts    = dict()
+    tracker   = dict()
     for elf in elves:
-      prop           = elf.propose(elves, order)
-      proposals[elf] = prop
-      counts[prop]   = counts.get(prop, 0) + 1
-    for elf, move in proposals.items():
-      if counts[move] == 1 and elf != move:
-        changed = True
+      prop = elf.propose(elves, order)
+      if elf != prop:
+        proposals[elf] = prop
+        tracker[prop]  = tracker.get(prop, 0) + 1
+    for elf, prop in proposals.items():
+      if tracker[prop] == 1:
         elves.remove(elf)
-        elves.add(move)
-    order = order[1:] + order[:1]
-    rnd  += 1
+        elves.add(prop)
+    order  = order[1:] + order[:1]
+    count += 1
 
-    if not changed: break
+    if not proposals: break
 
-  return rnd, elves
+  return count, elves
 
 
 def sol_1(elves):
