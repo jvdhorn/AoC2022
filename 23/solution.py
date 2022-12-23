@@ -13,27 +13,23 @@ def parse_input(inp):
 
 class Elf(complex):
 
-  adjacent = (1, 1-1j, 1+1j, -1, -1-1j, -1+1j, 1j, -1j)
-
-  check    = { 1j:( 1j-1,  1j,  1j+1),
-              -1j:(-1j-1, -1j, -1j+1),
-                1:( 1-1j,   1,  1+1j),
-               -1:(-1-1j,  -1, -1+1j)}
-
+  adjacent = (1+1j, 1, 1-1j, -1j, -1-1j, -1, 1j-1, 1j)
 
   def propose(self, others, order):
 
-    if any(self+i in others for i in self.adjacent):
+    occupied = [self + i in others for i in self.adjacent]
+    if any(occupied):
+      occupied.append(occupied[0])
       for move in order:
-        if not any(self+i in others for i in self.check[move]):
-          return Elf(self + move)
+        if not any(occupied[move-1:move+2]):
+          return Elf(self + self.adjacent[move])
 
     return self
 
 
 def simulate(elves, steps):
 
-  order = (1j, -1j, -1, 1)
+  order = (7,3,5,1)
   count = 0
 
   while count < steps:
@@ -58,19 +54,19 @@ def simulate(elves, steps):
 
 def sol_1(elves):
 
-  rnd, elves = simulate(elves.copy(), 10)
+  count, elves = simulate(elves.copy(), 10)
 
   real = [int(elf.real) for elf in elves]
   imag = [int(elf.imag) for elf in elves]
 
-  return (max(real)-min(real)+1) * (max(imag)-min(imag)+1) - len(elves)
+  return (max(real) - min(real) + 1) * (max(imag) - min(imag) + 1) - len(elves)
 
 
 def sol_2(elves):
 
-  rnd, elves = simulate(elves.copy(), float('inf'))
+  count, elves = simulate(elves.copy(), float('inf'))
 
-  return rnd
+  return count
 
 
 if __name__ == '__main__':
