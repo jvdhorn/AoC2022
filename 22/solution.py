@@ -73,7 +73,7 @@ def identify_cube(maze, size):
     if c != None != d: cube[c][3] = d; cube[d][2] = c
 
   opposing = set()
-  for f,(a,b,c,d) in enumerate(cube):
+  for a,b,c,d in cube:
     if a != None != c: opposing.add(frozenset((a,c)))
     if b != None != d: opposing.add(frozenset((b,d)))
     if None not in (a,b,c,d):
