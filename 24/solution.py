@@ -34,7 +34,7 @@ def simulate(dims, states, start, end):
           and (i, j) not in states[(t+1)%l]):   # Blizzard-free
         if (i,j) == end: return t + 2
         queue.add((t+1, i, j))
-        visited.add(((t+1)%l, x, y))
+        visited.add(((t+1)%l, i, j))
 
 
 def rot(arr, n):
