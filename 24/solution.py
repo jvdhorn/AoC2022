@@ -22,7 +22,7 @@ def simulate(dims, states, start, end):
   h, w    = dims
   l       = len(states)
   queue   = {(t,)+start for t, state in enumerate(states) if start not in state}
-  visited = set()
+  visited = queue.copy()
 
   while queue:
     pos     = min(queue)
