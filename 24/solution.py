@@ -28,13 +28,13 @@ def simulate(dims, states, start, end):
     pos     = min(queue)
     t, x, y = pos
     queue.remove(pos)
-    if (x,y) == end: return t + 1
-    visited.add((t%l, x, y))
     for i, j in ((x,y), (x-1,y), (x+1,y), (x,y-1), (x,y+1)):
       if (h > i >= 0 <= j < w                   # In bounds
           and ((t+1)%l, i, j) not in visited    # Unvisited
           and (i, j) not in states[(t+1)%l]):   # Blizzard-free
+        if (i,j) == end: return t + 2
         queue.add((t+1, i, j))
+        visited.add(((t+1)%l, x, y))
 
 
 def rot(arr, n):
