@@ -17,36 +17,41 @@ def parse_input(inp):
   return (h, w), states
 
 
-def simulate(dims, states, start, end, time):
+def simulate(dims, states, start, end):
 
   h, w    = dims
   l       = len(states)
-  states  = states[time%l:]+states[:time%l-l]
   queue   = {(t,)+start for t, state in enumerate(states) if start not in state}
   visited = set()
 
   while queue:
     pos     = min(queue)
-    queue.remove(pos)
     t, x, y = pos
+    queue.remove(pos)
     if (x,y) == end: return t + 1
     visited.add((t%l, x, y))
     for i, j in ((x,y), (x-1,y), (x+1,y), (x,y-1), (x,y+1)):
-      in_bounds = h > i >= 0 <= j < w
-      unvisited = ((t+1)%l, i, j) not in visited
-      blizzsafe = (i, j) not in states[(t+1)%l]
-      if in_bounds and unvisited and blizzsafe:
+      if (h > i >= 0 <= j < w                   # In bounds
+          and ((t+1)%l, i, j) not in visited    # Unvisited
+          and (i, j) not in states[(t+1)%l]):   # Blizzard-free
         queue.add((t+1, i, j))
+
+
+def rot(arr, n):
+
+  return (arr[n%len(arr):] + arr)[:len(arr)]
 
 
 def solution(inp):
 
   (x,y), states = inp
-  t0 = simulate((x,y), states, (0,0), (x-1, y-1), 0)
-  t1 = simulate((x,y), states, (x-1, y-1), (0,0), t0)
-  t2 = simulate((x,y), states, (0,0), (x-1, y-1), t0+t1) 
+  t0     = simulate((x,y), states, (0,0), (x-1, y-1))
+  states = rot(states, t0)
+  t1     = simulate((x,y), states, (x-1, y-1), (0,0))
+  states = rot(states, t1)
+  t2     = simulate((x,y), states, (0,0), (x-1, y-1)) 
 
-  return t0, t0+t1+t2
+  return t0, t0 + t1 + t2
 
 
 if __name__ == '__main__':
