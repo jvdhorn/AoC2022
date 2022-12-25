@@ -1,31 +1,31 @@
 #!/usr/bin/python
 
-def deci(lst):
-
-  return sum(n*5**i for i,n in enumerate(lst[::-1]))
-
-
 def snafu_to_decimal(snafu):
 
   conv = {'=':-2, '-':-1, '0': 0, '1':1, '2':2}
 
-  return deci([*map(conv.get, snafu)])
+  return sum(conv[n]*5**i for i,n in enumerate(snafu[::-1]))
 
 
 def decimal_to_snafu(number):
   
-  num = abs(number)
-  lim = [2]
+  num    = abs(number)
+  snafu  = []
+  maxpow = 1
+  lim    = 2
 
-  while deci(lim) < num: lim.append(2)
+  while lim < num:
+    lim    += 2 * 5 ** maxpow
+    maxpow += 1
 
-  for n in range(len(lim)):
-    lim[n] = next(i for i in (-2,-1,0,1,2) if deci(lim[:n]+[i]+lim[n+1:])>=num)
+  for n in range(maxpow - 1, -1, -1):
+    lim -= 4 * 5 ** n
+    snafu.append(-2)
+    while lim < num:
+      lim += 5 ** n
+      snafu[-1] += 1
 
-  if num == -number:
-    lim = [-i for i in lim]
-
-  return ''.join('012=-'[i] for i in lim)
+  return ''.join('012=-'[i if num == number else -i] for i in snafu)
 
 
 def solutiom(inp):
