@@ -21,20 +21,21 @@ def simulate(dims, states, start, end):
 
   h, w    = dims
   l       = len(states)
-  queue   = {(t,)+start for t, state in enumerate(states) if start not in state}
-  visited = queue.copy()
+  times   = [t for t, state in enumerate(states) if start not in state]
+  queue   = [(times.pop(0),)+start]
+  visited = set(queue)
 
   while queue:
-    pos     = min(queue)
-    t, x, y = pos
-    queue.remove(pos)
+    t, x, y = queue.pop(0)
     for i, j in ((x,y), (x-1,y), (x+1,y), (x,y-1), (x,y+1)):
       if (h > i >= 0 <= j < w                   # In bounds
           and ((t+1)%l, i, j) not in visited    # Unvisited
           and (i, j) not in states[(t+1)%l]):   # Blizzard-free
         if (i,j) == end: return t + 2
-        queue.add((t+1, i, j))
+        queue.append((t+1, i, j))
         visited.add(((t+1)%l, i, j))
+    if t+1 in times or (times and not queue):
+      queue.append((times.pop(0),)+start)
 
 
 def rot(arr, n):
