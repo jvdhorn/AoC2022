@@ -28,7 +28,7 @@ def decimal_to_snafu(number):
   return ''.join('012=-'[i if num == number else -i] for i in snafu)
 
 
-def solutiom(inp):
+def solution(inp):
 
   total = sum(map(snafu_to_decimal, inp))
 
@@ -38,5 +38,5 @@ def solutiom(inp):
 if __name__ == '__main__':
   with open('input.txt') as inp:
     raw       = inp.read().splitlines()
-    solution1 = solutiom(raw)
+    solution1 = solution(raw)
     print(solution1)

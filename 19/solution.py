@@ -64,6 +64,7 @@ def sol_2(factories):
 
   return total
 
+
 if __name__ == '__main__':
   with open('input.txt') as inp:
     raw       = inp.read().splitlines()
